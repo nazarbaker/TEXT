@@ -1,0 +1,544 @@
+Functions have builtin properties:
+
+.length shows how many arguments function awaits to get.
+
+(function(a, b){}).length // -> 2
+
+.name show function name, if there is one (remember that function can be anonymous)
+
+(function(a, b){}).name;// "" -> anonymous function.
+
+(function getSum(a, b){}).name; // "getSum"
+
+Also you may add your own properties to function and use them later:
+
+function runIfPropertySet() {
+  if (runIfPropertySet.shouldRun) {
+    console.log('run');
+  }
+}
+runIfPropertySet.shouldRun = true;
+runIfPropertySet(); // -> 'run'
+
+runIfPropertySet.shouldRun = false;
+runIfPropertySet(); // -> nothing;
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+arguments is an array like object holding all of the values passed to the function.
+————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+arguments.length - number of arguments. (виведе кількість значень переданих функції при виклику).
+arguments - an array of values passed to the function. (виведе масив з значеннями переданих функції при виклику).
+arguments[i] - виведе аргумент під номером і.
+
+function showAllArguments() { // no named arguments
+  console.log(arguments);
+  console.log(arguments.length);
+  console.log(arguments[1]);
+}
+
+showAllArguments(1, null, 'string');
+
+> [1, null, 'string']
+> 3
+> null
+
+--------------------------------------------------------------------------------------------------------------
+
+var from = 'Semen';
+
+function showMessage(from, text) {
+  from = '**' + from + '**';
+  alert(from + ':' + text);
+}
+
+! тут значення from зміниться тільки для функції.
+
+showMessage(from, 'Hello'); -> "**Semen**:Hello"
+
+якщо вивести просто:
+
+from; // -> "Semen"
+
+!!! Якщо один параметр не зазначений при виклиці він буде undefined.
+
+showMessage(from); -> "**Semen**:undefined"
+
+Можна задати параметри по замовчуванню:
+
+1-ий варіант:
+
+function showMessege(from, text) {
+	if(text === undefined) {
+		text = 'no text'
+	}
+}
+
+2-ий варіант:
+
+function showMessege(from, text) {
+	text = text || 'no text';
+}
+
+--------------------------------------------------------------------------------------------------------------
+! Якщо функція не повертає нічого, або return без аргументу, то вона вертає undefined.
+--------------------------------------------------------------------------------------------------------------
+В JS функція являється таким самим значеням, як і строка, або число.
+І як будь-яке значення об'явлену функцію можна вивести, ось так:
+
+function sayHi() {
+ console.log('Hello');
+}
+
+console.log(sayHi); // Виведе код функції:	sayHi() {
+											 console.log('Hello');
+											}
+
+Якщо викликати з дужками, то виведе:
+
+console.log(sayHi()); // Hello
+
+--------------------------------------------------------------------------------------------------------------
+
+Функцію можна скопіювати в іншу змінну:
+
+function sayHi() {
+ console.log('Hello');
+}
+
+var func = sayHi; ->    змінній func присвоюється значення функції sayHi() і вона також стає функцією.
+						(sayHi має бути без дужок, щоб вивівся код функції, а не виконання функції)
+
+func(); // Hello
+sayHi(); // Hello
+
+sayHi = null; -> тут sayHi присвоюється null
+
+sayHi(); -> виведе помилку
+func(); // Hello
+
+--------------------------------------------------------------------------------------------------------------
+
+Анонімні функції.
+
+Функціональні вирази, які не записуються в змінну називають - анонімними функціями:
+
+function ask(question, yes, no) {
+	if(confirm(question)){
+		yes();
+	} else {
+		no();
+	}
+}
+
+ask(
+	"Are you agree?",
+	function(){alert('You are agree');},      -> анонімні функції
+	function(){alert("You aren't agree");}	 	->	анонімні функції
+	);
+
+Нема потреби записувати функцію в змінну, якщо ми не збираємося викликати її ще раз.
+Можна просто об'явити функцію там де вона потрібна.
+
+--------------------------------------------------------------------------------------------------------------
+
+Самовиклик функції (виклик на місці):
+
+(function(){
+	var a = 10;
+	console.log(a);
+})(); // 10
+
+
+--------------------------------------------------------------------------------------------------------------
+
+New Function:
+
+var sum = new Function("a,b","return a+b");
+
+var result = sum(1,2);
+
+result; // -> 3
+
+sum(2,3); // -> 5
+
+Цей спосіб дозволяє зробити функцію на льоту зі строки.
+Тобто функція створюється викликом new Function(params, code);
+
+params - параметри (аргументи) функції через кому у вигляді строки.
+code - код функції у вигляді строки.
+
+--------------------------------------------------------------------------------------------------------------
+Рекурсія 2 зошит
+--------------------------------------------------------------------------------------------------------------
+Named function expression (Іменовані функціональні вирази) - створенні спеціально для роботи з рекурсією.
+
+var f = function sayHi(){...}; // -> Named function expression
+
+! Не плутати з звичайним function expression:
+
+var f = function(){...}; // -> function expression
+
+Приклад:
+
+function factorial(n){
+  return n ? n * factorial(n-1) : 1;
+}; // звичайна функція.
+
+console.log(factorial(5)); // -> 120 -> факторіал числа.
+
+Попробуємо перевести її в іншу змінну:
+
+var g = factorial;
+console.log(g(5)); // -> 120 -> все ок.
+
+factorial = null; // -> переписуєм значення змінної factorial з функції на null.
+
+console.log(g(5)); // -> видасть помилку factorial is not a function
+
+Тому що всередині функція навіть переписана в іншу змінну  посилається далі на factorial,
+а factorial вже не функція.
+
+Для цього і використовують NFE
+
+var f = function factorial(n) {
+	return n ? n * factorial(n-1) : 1;
+}
+
+var g = f;
+console.log(g(5)); // -> 120 -> все ок.
+
+f = null;
+
+console.log(g(5)); // -> 120 -> також все ок.
+
+І навіть якщо:
+factorial = null; // -> все буде ок.
+
+--------------------------------------------------------------------------------------------------------------
+
+Функція - це об'єкт.
+
+- з властивостями name, length, prototype. (дивися в верху)
+
+- може використовуватися, як любий інший об'єкт - зберігатися в змінних, в інших об'єктах,
+	передаватися як аргумент і повертатися як значення.
+
+- функціям можна задавати властивості і методи.(треба знайти приклади).
+
+- на відміну від інших об'єктів функцію можна викликати.
+
+--------------------------------------------------------------------------------------------
+
+'this' keyword
+
+!!! this - стає ім'ям об'єкту в контексті якого був викликаний.
+
+In javascript this indicate current context in which function is called.
+
+function showThis() {
+  console.log(this);
+}
+
+There can be total 4 contexts:
+
+1)
+
+object, if you call function as method:
+var obj = {
+fn: showThis
+};
+
+obj.fn(); // -> Object { fn: function }
+
+2)
+
+window if you call function: showThis(); // -> window
+
+3)
+
+DOM element, if you call function as event listener
+
+document.body.onclick = showThis;
+
+// ... -> <body...
+
+В мене вийшло так:
+
+function showThis() {
+  console.log(this);
+}
+
+4)
+
+new object, if function used as constructor: new showThis; // -> showThis {}
+
+new showThis;
+
+
+
+More on calling functions
+
+There are 2 methods which allows you to change context:
+
+Function.call(context/*, comma-separated list of arguments */);
+Function.apply(context/*, list of arguments as array */);
+
+var obj1 = {
+  value: 'obj1',
+  showValue: function(arg, arg2) {
+    console.log(this.value, arg + arg2);
+  }
+};
+
+var obj2 = {
+  value: 'obj2'
+};
+
+obj1.showValue(1, 2); // -> obj1 3
+obj1.showValue.call(obj2, 1, 2); // -> obj2 3
+obj1.showValue.apply(obj2, [1, 2]); // -> obj2 3
+
+If you pass null as context - your context will become window.
+
+-------------------------------------------------------------------------------------------------------------------
+
+Apply/Call
+
+Функцию можно вызвать, используя методы call и apply.
+
+func.apply(obj, [параметры])
+func.call(obj, параметр)
+
+При таком вызове this будет установлен в obj.
+
+Оба метода работают одинаково, но для call аргументы подставляются в вызов, а для apply - передается массив.
+
+function sum(a,b) {
+    this.c = a + b
+}
+
+var obj = {}
+
+sum.call(obj, 1,2)
+
+sum.apply(obj, [1,2])
+
+alert(obj.c)   // => 3
+
+Вызов через apply удобен тем, что можно самостоятельно сформировать массив аргументов или модифицировать существующий.
+
+
+
+----------------------------------------------------------------------
+
+Приклади з this:
+
+Приклад 1
+—————————
+
+Створюєм функцію з this:
+
+function getIt() {
+  return this.x;
+}
+
+Створюємо об'єкт з значеннями х і getIt (функцією):
+
+var obj1 = {
+  get: getIt,
+  x: 1
+}
+
+obj1.x; // 1 -> тут логічно - об'єкт(obj1) з властивістю х має значення 1.
+
+obj1.get; -> виведе код функції:
+
+getIt() {
+  return this.x;
+}
+
+obj1.get(); // 1 -> тут викликається функція, при виконанні якої this.x береться з даного об'єкту,
+					тобто this.x = obj1.x
+
+те саме:
+
+var obj2 = {
+  get: getIt,
+  x: 2
+}
+
+obj2.get(); // 2
+
+
+Приклад 2
+—————————
+
+Функція як властивість об'єкту:
+
+var obj = {
+  base: 12,
+  average: function(x,y){
+    return (this.base + x + y)/3;
+  }
+}
+
+obj.base; // 12
+
+obj.average; // -> повертає
+
+function(x,y){
+    return (this.base + x + y)/3;
+}
+
+obj.average(4,2); // 6 -> повертє 6, тому що this.base = obj.base = 12
+
+Приклад 3 - Конструктор
+———————————————————————
+
+Створення об'єктів через new:
+
+Конструктор - стає люба функція викликана через new.
+
+function Animal(name) {
+	this.name = name;
+	this.canWalk = true;
+}
+
+var animal = new Animal("wolf");
+
+animal; ->
+
+Animal {
+  name: "wolf",
+  canWalk: true
+}
+
+animal.name; // "wolf"
+animal.canWalk; // true
+
+Пояснення:
+
+1) Створюється новий об'єкт - this (тобто this = {} ).
+
+2) функція використовуєть як правило, додає методи і властивості:
+	this.name = name; -> animal.name = "wolf";
+	this.canWalk = true; -> animal.canWalk = true;
+
+Використовуючи new Animal з різними параметрами ми можемо створити скільки об'єктів скільки потрібно.
+
+Інколи функцію конструктор об'являють і тут же використовують:
+
+var animal = new function(){
+  this.name = "tiger";
+  this.canWalk = true;
+};
+
+animal; -> Object {name: "tiger", canWalk: true}
+
+так роблять коли хочуть створити єдиний об'єкт даного типу.
+
+
+Приклад 4 - створення методів в конструкторі
+——————————————————————————————————————————————
+
+Функція яка записана як значення властивості об'єкту називається методом.
+
+function user(name) {
+  this.name = name;
+  this.sayHi = function() {
+                 console.log("my name:" + this.name);
+              };
+}
+
+var ivan = new user("Ivan");
+
+ivan.sayHi(); // -> my name:Ivan
+
+Приклад 5 - локальні змінні в конструкторі
+——————————————————————————————————————————————
+
+Всі змінні, які не записані через this є локальні, тобто не передаються в новий об'єкт.
+
+function user(firstName, lastName){
+  var phrase = 'Hello';
+
+  function getFullName(){
+    return firstName + " " + lastName;
+  }
+
+  this.sayHi = function(){
+    console.log(phrase + ", " + getFullName() );
+  };
+}
+
+var vasya = new user("Vasya", "Petrov"); // -> створюється об'єкт
+
+vasya.sayHi(); //  Hello, Vasya Petrov
+
+vasya.phrase; //  undefined
+
+
+Шпаргалка
+
+Если кратко срезюмировать все вышесказанное, то получится такая вот шпаргалка:
+
+4 варианта вызова
+
+forTHIS.jpg
+
+-----------------------------------------------------------------------------------------------------------------------
+
+Recursion
+
+A recursive function is a function which call itself.
+
+For example, function that find n-th element of fibonacci numbers:
+
+function fib(n) {
+  function fibIter(a, b, i) {
+    if (i > n) {
+      return b;
+    }
+    return fibIter(b, a + b, i + 1);
+  }
+  return fibIter(1, 1, 2);
+}
+fib(20);
+
+
+Recusion (cont.)
+
+But, fibonacci numbers is not what you need to do every day.
+
+Better example - function that build DOM according to given structure:
+
+function createEl(domObj) {
+  var el = document.createElement(domObj.tag);
+  if (domObj.children) {
+    for (var i = 0; i < domObj.children.length; i++) {
+      el.appendChild(createEl(domObj.children[i]));
+    }
+  }
+  return el;
+}
+
+createEl({
+  tag: 'div',
+  children: [
+    { tag: 'span' },
+    { tag: 'ul', children: [{ tag: 'li' }] }
+  ]
+});
+
+<div>​
+	<span>​</span>
+	​<ul>
+		​<li>​</li>​
+	</ul>
+​</div>​
+
+Тут рекурсивно створило структуру тегів.
+
+-----------------------------------------------------------------------------------------------------------------------
