@@ -1,0 +1,95 @@
+Пошук елементів в DOM:
+
+1. По id:
+
+var box = document.getElementById('second');
+
+document.getElementById('dataKeeper').style.color = 'blue'
+
+------------------------------------------------------------------------------------------
+
+2. По імені тегу:
+
+var divs = document.getElementsByTagName('div');// тут в змінну divs записується всі елементи div
+
+document.getElementsByTagName('LI')[1]; // тут йде доступ до другого елементу li (виводить масив з елементів li).
+
+!!! getElementsByTagName - можна викликати не тільки до document а до любого елементу в якого є тег.
+Наприклад, наступний виклик отримає список елементів li які находяться в середині першого тега div:
+
+document.getElementsByTagName('DIV')[0].getElementsByTagName('LI')
+
+
+
+------------------------------------------------------------------------------------------
+
+3. По класу:
+
+var divs1 = document.getElementsByClassName('div');
+
+------------------------------------------------------------------------------------------------
+
+4. Пошук по атрибуту name: getElementsByName
+
+Метод document.getElementsByName(name) повертає всі елементи, у яких співпадає атрибут name.
+
+---------------------------------------------------------------------------------------------------------
+
+5. Новий спосіб
+
+var span = document.querySelector('.div span');
+
+тут шукаються елементи, аналогічно css - елемент span який є в середині елементу з id="div"
+
+var span = document.querySelector('.div span'); // тут вибере тільки перший співпадаючий елемент
+var spans = document.querySelectorAll('.div span'); // тут вибере всі елементи такого типу
+
+----------------------------------------------------------------------------------------
+
+Отримання всіх вкладених елементів:
+
+Виклик elem.getElementsByTagName('*') верне список всіх вкладених елементів elem по черзі їх обходу.
+
+Наприклад в такому DOM:
+
+
+<div id="d1">
+  <ol id="ol1">
+    <li id="li1">1</li>
+    <li id="li2">2</li>
+  </ol>
+</div>
+
+
+Такий код:
+
+var div = document.getElementById('d1'); // div присвоюється елемент з id="d1"
+
+var elems = div.getElementsByTagName('*'); // elems присвоюється масив зі всіх елементів div
+
+for(var i=0; i<elems.length; i++) alert(elems[i].id); // виведе послідовність: ol1, li1, li2.
+
+
+-----------------------------------------------------------------------------------------------------------------
+——————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+Вставляння елементів:
+
+Спочатку витягується елемент відносно якого буде вставляння:
+
+var conteiner = document.getElementById('app'); // витягує елемент з html документа по id
+var body = document.getElementsByTagName('body')[0]; // тут верне перший елемент масиву!!!
+
+!!! Спосіб, який витягує багато елементів, тобто де є Elements - завжди вертає масив!
+
+... далі "створюємо" потрібний елемент - записавши в змінну:
+
+var form = document.createElement('form'); => записує в змінну тег <form>
+var button = document.createElement('button'); => записує в змінну тег <button>
+
+... створюємо тег <button> в вище отриманому елементі:
+
+conteiner.appendChild(button); //  він буде доданий як останній елемент
+
+button.textContent = "Create Table"; // додає текст до елементу
+
+node.insertBefore(newNode,oldNode);
